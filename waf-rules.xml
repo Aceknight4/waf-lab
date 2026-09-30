@@ -1,0 +1,45 @@
+<!--
+  Custom Wazuh rules for the WAF lab.
+  Appended to local_rules.xml on the Wazuh manager (192.168.100.10).
+  Matches JSON events from waf_blocks.log via Wazuh's built-in "json" decoder
+  (enabled by setting <log_format>json</log_format> on the agent's <localfile> block —
+  no custom decoder needed).
+-->
+<group name="waf,">
+
+<rule id="100110" level="5">
+  <decoded_as>json</decoded_as>
+  <field name="event">BLOCKED</field>
+  <description>WAF blocked a request from $(src_ip)</description>
+  <group>waf,</group>
+</rule>
+
+<rule id="100111" level="10">
+  <if_sid>100110</if_sid>
+  <field name="rule">SQLi</field>
+  <description>WAF blocked a SQL Injection attempt from $(src_ip)</description>
+  <group>waf,sqli,attack,</group>
+</rule>
+
+<rule id="100112" level="10">
+  <if_sid>100110</if_sid>
+  <field name="rule">XSS</field>
+  <description>WAF blocked a Cross-Site Scripting (XSS) attempt from $(src_ip)</description>
+  <group>waf,xss,attack,</group>
+</rule>
+
+<rule id="100113" level="10">
+  <if_sid>100110</if_sid>
+  <field name="rule">PathTraversal</field>
+  <description>WAF blocked a Path Traversal / LFI attempt from $(src_ip)</description>
+  <group>waf,path_traversal,attack,</group>
+</rule>
+
+<rule id="100114" level="8">
+  <if_sid>100110</if_sid>
+  <field name="rule">RateLimit</field>
+  <description>WAF rate-limited excessive requests from $(src_ip)</description>
+  <group>waf,rate_limit,</group>
+</rule>
+
+</group>
