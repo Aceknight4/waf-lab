@@ -1,6 +1,6 @@
 # Web Application Firewall Lab
 
-A Web Application Firewall built from scratch in Python/Flask, placed in front of a deliberately vulnerable web app (DVWA), and wired into an existing Wazuh SIEM — proving detection **and** prevention, not just observation.
+A Web Application Firewall built from scratch in Python/Flask, placed in front of a deliberately vulnerable web app (DVWA), and wired into an existing Wazuh SIEM  proving detection **and** prevention, not just observation.
 
 This is a companion piece to my [Honeypot + SIEM lab](../honeypot-cowrie-lab): where that project shows a system that *lures and watches* attackers, this one shows a system that actively *blocks* them.
 
@@ -11,9 +11,9 @@ This is a companion piece to my [Honeypot + SIEM lab](../honeypot-cowrie-lab): w
 A transparent reverse proxy sits on port 80, in front of DVWA (port 8080). Every request is inspected before it's allowed through:
 
 - **Signature-based detection** for SQL Injection, XSS, and Path Traversal / LFI, using regex rules against the URL-decoded path, query string, and body
-- **Rate limiting** — a per-IP sliding window (30 requests / 10 seconds) that blocks volume-based abuse (brute force, scripted hammering) that signature rules can't see, since the content of each request is clean
+- **Rate limiting**  a per-IP sliding window (30 requests / 10 seconds) that blocks volume-based abuse (brute force, scripted hammering) that signature rules can't see, since the content of each request is clean
 - **Structured JSON logging** of every block event (rule fired, matched text, source IP, path)
-- **Live SIEM integration** — block events are forwarded to Wazuh, decoded automatically, and matched against custom rules that produce human-readable, correctly-severity-scored alerts
+- **Live SIEM integration**  block events are forwarded to Wazuh, decoded automatically, and matched against custom rules that produce human-readable, correctly-severity-scored alerts
 
 Clean traffic is forwarded to DVWA unchanged and the response passed straight back. Nothing is blocked unless it matches an actual rule.
 
@@ -98,9 +98,9 @@ For the Wazuh side: set the agent's `ossec.conf` to monitor `waf_blocks.log` wit
 
 ## Lessons learned
 
-- **Signature-based detection has a real, well-understood blind spot:** anything that doesn't match a known pattern gets through. Rate limiting exists precisely to cover the gap signatures can't — abuse that looks clean on a per-request basis but is obviously wrong in aggregate.
-- **Decode before you inspect.** Any filter that checks raw, still-encoded input can be bypassed by encoding the payload — a lesson that generalizes well beyond this one project.
-- **Structured logging pays for itself immediately.** Switching from a human-readable log line to JSON turned a fragile, regex-based SIEM integration into a "just declare `log_format json`" integration — zero custom decoder needed, matching the pattern already proven in the honeypot project.
+- **Signature-based detection has a real, well-understood blind spot:** anything that doesn't match a known pattern gets through. Rate limiting exists precisely to cover the gap signatures can't abuse that looks clean on a per-request basis but is obviously wrong in aggregate.
+- **Decode before you inspect.** Any filter that checks raw, still-encoded input can be bypassed by encoding the payload a lesson that generalizes well beyond this one project.
+- **Structured logging pays for itself immediately.** Switching from a human-readable log line to JSON turned a fragile, regex-based SIEM integration into a "just declare `log_format json`" integration  zero custom decoder needed, matching the pattern already proven in the honeypot project.
 
 ## What's next
 
